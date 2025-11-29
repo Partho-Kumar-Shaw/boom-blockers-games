@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Boom Blockers - Don’t let them drop</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <style>
+      html,
+      body {
+        overflow-x: hidden; /* Prevent horizontal scroll */
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: linear-gradient(120deg, #020024 0%, #091353 60%, #00d4ff 100%);
+        color: #eaf6ff;
+        
+      }
+      .navbar-brand {
+        font-family: "Orbitron", sans-serif;
+        font-size: 2rem;
+        letter-spacing: 1px;
+      }
+      .navbar {
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.9);
+      }
+      .carousel-inner img {
+        height: 430px;
+        object-fit: cover;
+      }
+      .game-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .game-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.7);
+      }
+      .leaderboard {
+        background: rgba(0, 72, 123, 0.18);
+        border-radius: 13px;
+      }
+      .progress {
+        height: 22px;
+      }
+      .card-icon {
+        font-size: 2.4rem;
+        color: #ffd200;
+      }
+      .accordion-button {
+        background: #00334e;
+        color: #fff;
+      }
+      .accordion-body {
+        background: #00223c;
+        color: #efeefe;
+      }
+      .footer {
+        background: #00487b;
+        color: #fff;
+        padding: 2rem 0;
+      }
+      @media (max-width: 767.98px) {
+        .navbar-brand {
+          font-size: 1.4rem;
+        }
+        .carousel-inner img {
+          height: 400px;
+        }
+      }
+      .accordion-button::after {
+        filter: brightness(0) invert(1);
+      }
+      .blink-play {
+        animation: blink-grow 1s infinite;
+        transition: transform 0.2s;
+      }
+      @keyframes blink-grow {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.4;
+          transform: scale(1.18);
+        }
+      }
+      @media (max-width: 767.98px) {
+        .blink-play {
+          animation: blink-grow-mobile 1s infinite;
+        }
+        @keyframes blink-grow-mobile {
+          0%,
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.7;
+            transform: scale(1.05);
+          }
+        }
+      }
+      @media (max-width: 767.98px) {
+        .carousel-caption {
+          left: 50%;
+          top: 18%;
+          bottom: auto;
+          right: auto;
+          transform: translate(-50%, -50%);
+          width: 90%;
+          padding: 1rem 1.2rem;
+          background: rgba(0, 34, 60, 0.55);
+          border-radius: 1.2rem;
+          backdrop-filter: blur(18px) saturate(140%);
+          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+          text-align: center;
+        }
+        .carousel-caption h3,
+        .carousel-caption p {
+          color: #ffd200;
+          text-shadow: 0 2px 8px #00223c;
+        }
+        .carousel-caption:hover {
+          box-shadow: 0px 0px 14px black;
+        }
+      }
+      /* ---- Scroll Counter Styles ---- */
+      .scroll-counters-section {
+        padding: 60px 0 32px 0;
+        background: rgba(0, 34, 60, 0.15);
+        border-radius: 16px;
+        margin: 70px auto 0 auto;
+        box-shadow: 0 5px 40px -16px #002857ee;
+        max-width: 980px;
+      }
+      .counter {
+        font-size: 3rem;
+        font-weight: bold;
+        margin: 30px 0 15px 0;
+        color: #ffd200;
+        font-family: "Orbitron", sans-serif;
+        letter-spacing: 2px;
+        text-shadow: 0 2px 7px #001b2b;
+      }
+      .counter-label {
+        color: #eaf6ff;
+        font-size: 1.09rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+      }
+      /* New content section styling */
+      main {
+        max-width: 980px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+      }
+      .info-section {
+        margin-bottom: 2.5rem;
+      }
+      .section-title {
+        font-family: "Orbitron", sans-serif;
+        font-weight: 700;
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+        color: #ffd200;
+        text-shadow: 0 1px 7px #001b2b;
+      }
+      .info-section p,
+      .info-section ol {
+        font-size: 1.1rem;
+        line-height: 1.5;
+        color: #eaf6ff;
+      }
+      .info-section ol li {
+        margin-bottom: 0.7rem;
+      }
+      .cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+      .card {
+        background: rgba(0, 34, 60, 0.5);
+        border-radius: 12px;
+        box-shadow: 0 2px 2px #cfe2ff;
+        flex: 1 1 280px;
+        padding: 1rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        border-color: #cfe2ff;
+      }
+      .card:focus,
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 0px 18px #cfe2ff;
+      }
+      .card h3 {
+        font-family: "Orbitron", sans-serif;
+        color: #ffd200;
+        font-size: 1.4rem;
+        margin-top: 0.2rem;
+        margin-bottom: 0.6rem;
+      }
+      .card p {
+        color: #eaf6ff;
+        font-size: 1rem;
+      }
+      .card i {
+        font-size: 2.4rem;
+        color: #ffd200;
+      }
+      /* Smooth color transition */
+  .transition-btn {
+    transition: all 0.5s ease;
+  }
+
+  /* Optional: fade effect for text change */
+  .fade-text {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .fade-text.show {
+    opacity: 1;
+  }
+    </style>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-color: #00487b;">
+      <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="#"
+          ><i class="fa-solid fa-ship me-2"></i> Boom Blockers</a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarCollapse"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <!-- Center Search -->
+          <form class="d-flex mx-auto my-2 my-lg-0" style="width: 45%;">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search ships or battles..."
+              aria-label="Search"
+            />
+            <button class="btn btn-outline-light">
+              <i class="fa fa-search"></i>
+            </button>
+          </form>
+          <!-- Menu -->
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" href="#"
+                ><i class="fa-solid fa-house-chimney"></i> Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a 
+                id="startGameBtn"
+                style="color: #eaf6ff"
+                class="nav-link blink-play"
+                href="#"
+                ><i class="fa-solid fa-gamepad"></i> Play</a
+              >
+            </li>
+            <li class="nav-item" onclick="window.location.href='leaderboard.html'">
+              <a class="nav-link" href="#"
+                ><i class="fa-solid fa-trophy"></i> Leaderboard</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#"
+                ><i class="fa-solid fa-anchor"></i> Weapons</a
+              >
+            </li>
+            <li class="nav-item" onclick="window.location.href='profile.html'">
+              <a class="nav-link" href="#"
+                ><i class="fa-solid fa-user-shield"></i> Profile</a
+              >
+            </li>
+          </ul>
+          <!-- Auth Buttons -->
+          <div class="ms-lg-3 mt-2 mt-lg-0 d-flex">
+            <button
+              class="btn btn-warning me-2"
+              onclick="window.location.href='login.html'"
+            >
+              <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
+            </button>
+            <button class="btn btn-light" onclick="window.location.href='signup.html'">
+              <i class="fa-solid fa-user-plus"></i> Signup
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO CAROUSEL -->
+    <div
+      id="carouselExample"
+      class="carousel slide mt-4"
+      data-bs-ride="carousel"
+    >
+      <div class="carousel-inner rounded shadow">
+        <div class="carousel-item active">
+          <img
+            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1400&q=80"
+            class="d-block w-100"
+            alt="Sea Battle"
+          />
+          <div class="carousel-caption">
+            <h3>Epic Ocean Battles</h3>
+            <p>Enter the world of Boom Blockers and conquer the sea!</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img
+            src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1400&q=80"
+            class="d-block w-100"
+            alt="Powerful Ships"
+          />
+          <div class="carousel-caption">
+            <h3>Unlock Powerful Ships</h3>
+            <p>Upgrade your fleet with unique weapons and shields.</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img
+            src="E:\.vscode\final college project\website\static\img\assets\rolex.png"
+            style="background-size: contain;"
+            class="d-block w-100"
+            alt="Leaderboard"
+          />
+          <div class="carousel-caption">
+            <h3>Climb the Leaderboard</h3>
+            <p>Challenge players worldwide and win big rewards.</p>
+          </div>
+        </div>
+      </div>
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#carouselExample"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#carouselExample"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+
+    <!-- NEW MAIN CONTENT INCLUDING GAME DETAILS, HOW TO PLAY, FEATURES -->
+    <main>
+      <!-- Game Details -->
+      <section class="info-section" aria-label="Game Overview">
+        <h2 class="section-title">Game Overview</h2>
+        <p>
+          Boom Blockers is an engaging arcade shooter where you pilot a single
+          ship battling through endless waves of enemies and powerful bosses.
+          Using simple controls (arrow keys + space to shoot), you dodge enemy
+          bullets and collect powerups to enhance your firepower.
+        </p>
+        <p>
+          The game combines thrilling action, strategic powerup use, and intense
+          boss battles for hours of entertainment.
+        </p>
+      </section>
+
+      <section class="info-section how-to-play" aria-label="How to Play Instructions">
+        <h2 class="section-title">How to Play</h2>
+        <ol>
+          <li>
+            Use the <strong>Arrow Left</strong> and <strong>Arrow Right</strong>
+            keys or <strong>A</strong> and <strong>D</strong> keys to move your
+            ship.
+          </li>
+          <li>Press the <strong>Spacebar</strong> to fire bullets at enemies.</li>
+          <li>
+            Destroy waves of enemies and powerups will occasionally drop —
+            collect them for advantages.
+          </li>
+          <li>
+            Use powerups like <em>Shield</em> (temporary invincibility),
+            <em>Rapid Fire</em> (faster shooting), and <em>Double Bullet</em>
+            (two shots).
+          </li>
+          <li>Beat boss enemies every few waves to advance.</li>
+          <li>Try to survive as long as possible and rack up a high score!</li>
+        </ol>
+      </section>
+
+      <!-- Game Features -->
+      <section aria-label="Game Features">
+        <h2 class="section-title">Key Features</h2>
+        <div class="cards">
+          <article class="card" tabindex="0" aria-label="Responsive Controls Feature">
+            <i class="fas fa-gamepad" aria-hidden="true"></i>
+            <h3>Responsive Controls</h3>
+            <p>Fluid and responsive movement with keyboard and precise shooting controls.</p>
+          </article>
+          <article class="card" tabindex="0" aria-label="Enemy Waves Feature">
+            <i class="fas fa-bug" aria-hidden="true"></i>
+            <h3>Dynamic Enemy Waves</h3>
+            <p>Enemies spawn in strategic, challenging waves, escalating as you progress.</p>
+          </article>
+          <article class="card" tabindex="0" aria-label="Boss Battles Feature">
+            <i class="fas fa-dragon" aria-hidden="true"></i>
+            <h3>Epic Boss Fights</h3>
+            <p>Bigger, fierce bosses with multiple attack patterns and phase changes.</p>
+          </article>
+          <article class="card" tabindex="0" aria-label="Powerups Feature">
+            <i class="fas fa-bolt" aria-hidden="true"></i>
+            <h3>Powerups & Bonuses</h3>
+            <p>Collect powerups to boost fire rate, double bullets, or gain a shield.</p>
+          </article>
+          <article class="card" tabindex="0" aria-label="Easy Mode Feature">
+            <i class="fas fa-heart" aria-hidden="true"></i>
+            <h3>Easy Mode</h3>
+            <p>Balanced difficulty for casual gamers with smooth gameplay and forgiving lives.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===== COUNTERS SECTION (with scroll animation) ==== -->
+    <div class="container scroll-counters-section mt-5">
+      <div class="row text-center">
+        <div class="col-md-4 mb-4 mb-md-0">
+          <div class="counter" data-target="200000">0</div>
+          <div class="counter-label">
+            <i class="fa-solid fa-users"></i> Players Registered
+          </div>
+        </div>
+        <div class="col-md-4 mb-4 mb-md-0">
+          <div class="counter" data-target="50000">0</div>
+          <div class="counter-label">
+            <i class="fa-solid fa-shield-halved"></i> Battles Fought
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="counter" data-target="120000">0</div>
+          <div class="counter-label">
+            <i class="fa-solid fa-trophy"></i> Achievements Won
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHIPS & WEAPONS SHOWCASE -->
+    <div class="container my-5">
+      <h2 class="text-center mb-4">
+        <i class="fa-solid fa-ship"></i> Featured Ships & Weapons
+      </h2>
+      <div class="row g-4">
+        <!-- Game Cards -->
+        <div class="col-lg-3 col-md-6">
+          <div class="card game-card bg-dark text-white">
+            <img src="E:\.vscode\final college project\website\static\img\assets\rolex.png" class="card-img-top" alt="Destroyer" />
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fa-solid fa-anchor card-icon"></i> Destroyer
+              </h5>
+              <p class="card-text">Balanced attack and defense. Ideal for beginners.</p>
+              <a href="#" class="btn btn-warning btn-sm">Choose</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div class="card game-card bg-dark text-white">
+            <img src="E:\.vscode\final college project\website\static\img\assets\rolex.png" class="card-img-top" alt="Cruiser" />
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fa-solid fa-bolt card-icon"></i> Cruiser
+              </h5>
+              <p class="card-text">High speed, powerful weapons. Great for chasing enemies.</p>
+              <a href="#" class="btn btn-warning btn-sm">Choose</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div class="card game-card bg-dark text-white">
+            <img src="E:\.vscode\final college project\website\static\img\assets\rolex.png" class="card-img-top" alt="Battleship" />
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fa-solid fa-shield-halved card-icon"></i> Battleship
+              </h5>
+              <p class="card-text">Maximum armor, slowest ship, absorbs lots of damage.</p>
+              <a href="#" class="btn btn-warning btn-sm">Choose</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+          <div class="card game-card bg-dark text-white">
+            <img src="E:\.vscode\final college project\website\static\img\assets\rolex.png" class="card-img-top" alt="Stealth" />
+            <div class="card-body">
+              <h5 class="card-title">
+                <i class="fa-solid fa-mask card-icon"></i> Stealth
+              </h5>
+              <p class="card-text">Invisible on radar, silent attacks. Perfect for ambush.</p>
+              <a href="#" class="btn btn-warning btn-sm">Choose</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD & PROGRESS BARS -->
+    <div class="container my-5 leaderboard py-4 px-3">
+      <h2 class="text-center mb-3"><i class="fa fa-trophy"></i> Top Players</h2>
+      <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th><i class="fa-solid fa-user"></i> Player</th>
+              <th><i class="fa-solid fa-ship"></i> Ship</th>
+              <th>Points</th>
+              <th>Progress</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Partho(aka rolex)</td>
+              <td>Destroyer</td>
+              <td>4200</td>
+              <td>
+                <div class="progress">
+                  <div class="progress-bar bg-success" style="width: 95%;">95%</div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Prachi </td>
+              <td>Battleship</td>
+              <td>3810</td>
+              <td>
+                <div class="progress">
+                  <div class="progress-bar bg-info" style="width: 76%;">76%</div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Risha</td>
+              <td>Cruiser</td>
+              <td>3490</td>
+              <td>
+                <div class="progress">
+                  <div class="progress-bar bg-warning" style="width: 69%;">69%</div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Shrishti</td>
+              <td>Cruiser</td>
+              <td>3490</td>
+              <td>
+                <div class="progress">
+                  <div class="progress-bar bg-danger" style="width: 40%;">40%</div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FAQ ACCORDION -->
+    <div class="container mb-5">
+      <h2 class="text-center mb-4"><i class="fa-solid fa-circle-question"></i> Game FAQs</h2>
+      <div class="accordion accordion-flush" id="faqAccordion">
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#faq1"
+            >
+              How to start playing Ship Shooter?
+            </button>
+          </h3>
+          <div
+            id="faq1"
+            class="accordion-collapse collapse"
+            data-bs-parent="#faqAccordion"
+          >
+            <div class="accordion-body">
+              Sign up, choose a ship, and join a battle arena from the Play tab!
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#faq2"
+            >
+              Can I upgrade my ship and weapons?
+            </button>
+          </h3>
+          <div
+            id="faq2"
+            class="accordion-collapse collapse"
+            data-bs-parent="#faqAccordion"
+          >
+            <div class="accordion-body">
+              Yes! Earn coins from battles and use them to unlock upgrades and special
+              weapons.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#faq3"
+            >
+              What are Power-ups?
+            </button>
+          </h3>
+          <div
+            id="faq3"
+            class="accordion-collapse collapse"
+            data-bs-parent="#faqAccordion"
+          >
+            <div class="accordion-body">
+              Power-ups randomly drop during battles giving extra speed, shields, or
+              firepower.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Footer-->
+<!--Footer-->
+<div class="footer text-center py-5" style="background-color:#00334e; color:#eaf6ff;">
+  <div class="container-fluid px-3 px-md-5">
+    <div class="row gy-4 justify-content-center">
+      <!-- Newsletter -->
+      <div class="col-12 col-md-6 mb-5">
+        <h6>Subscribe to our Newsletter</h6>
+        <form class="d-flex flex-column flex-sm-row justify-content-center" id="subscribeForm">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            aria-label="Email for newsletter"
+            class="form-control form-control  form-control-sm me-sm-2 mb-2 mb-sm-0 w-100"
+            required
+          />
+          <button type="submit" class="btn btn btn-outline-info btn w-100 w-sm-auto" id="subscribeBtn">
+            <i class="far fa-bell"></i> Subscribe
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="row gy-4">
+      <!-- Left -->
+      <div class="col-12 col-md-4 text-md-start">
+        <h5><i class="fa-solid fa-code"></i> Boom Blockers Game Portal</h5>
+        <p>&copy; 2025 Boom Blockers Team. Designed with Bootstrap & Font Awesome.</p>
+        <p>All rights reserved.</p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-12 col-md-3">
+        <h6>Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-decoration-none text-info">About</a></li>
+          <li><a href="#" class="text-decoration-none text-info">Contact</a></li>
+          <li><a href="#" class="text-decoration-none text-info">Privacy Policy</a></li>
+          <li><a href="#" class="text-decoration-none text-info">Terms of Service</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="col-12 col-md-4 text-md-end">
+        <h6>Contact Us</h6>
+        <p>
+          <i class="fa-solid fa-envelope"></i> support@shipshooter.com<br />
+          <i class="fa-solid fa-phone"></i> +1 (555) 123-4567
+        </p>
+        <h6>Follow Us</h6>
+        <a href="#" class="me-3 text-info"><i class="fab fa-discord fa-lg"></i></a>
+        <a href="#" class="me-3 text-info"><i class="fab fa-twitter fa-lg"></i></a>
+        <a href="#" class="text-info"><i class="fab fa-youtube fa-lg"></i></a>
+        <p class="mt-3">
+          <small>123 Gaming Blvd, Game City, GC 89012</small>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer bottom -->
+  <div style="border-top: 1px solid #21638c; margin-top: 2rem; padding-top: 1rem;">
+    <p style="margin: 0; font-size: 0.95rem; color: #ffd200;">
+      Beautifully crafted with <span style="color: #ff4d6d;">&hearts;</span> by our team members:
+      <a href="#" class="text-info text-decoration-none">@partho</a>,
+      <a href="#" class="text-info text-decoration-none">@prachi</a>,
+      <a href="#" class="text-info text-decoration-none">@risha</a>,
+      <a href="#" class="text-info text-decoration-none">@shrishti</a>
+    </p>
+  </div>
+</div>
+
+
+
+
+
+
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Sticky Navbar hide on scroll -->
+    <script>
+      let lastScrollTop = 0;
+      const navbar = document.querySelector(".navbar");
+      window.addEventListener("scroll", function () {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if (scrollTop > lastScrollTop && scrollTop > navbar.offsetHeight) {
+          navbar.style.transform = "translateY(-100%)";
+          navbar.style.transition = "transform 0.3s";
+        } else {
+          navbar.style.transform = "translateY(0)";
+          navbar.style.transition = "transform 0.3s";
+        }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+      });
+    </script>
+
+    <!-- Scroll Counter Animation with restart on scroll -->
+    <script>
+      // Animate a single counter element from 0 to target
+      function animateCounter(counter) {
+        const target = +counter.getAttribute("data-target");
+        const duration = 2000;
+        const start = 0;
+        const startTime = performance.now();
+
+        function update(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const value = Math.floor(progress * (target - start) + start);
+          counter.textContent = value.toLocaleString() + "+";
+          if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+      }
+
+      const counters = document.querySelectorAll(".counter");
+      const options = { threshold: 0.5 };
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const startBtn = document.getElementById('startGameBtn');
+    if (startBtn) {
+      startBtn.addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent anchor navigation
+        fetch('/start-game', { method: 'POST' })
+          .then(resp => resp.json())
+          .then(data => {
+            if (data.status === 'Game Launched') {
+              this.textContent = "Launched! Check your game window.";
+              this.classList.add('btn-success');
+              setTimeout(() => {
+                this.textContent = "Play";
+                this.classList.remove('btn-success');
+              }, 2500);
+            } else {
+              alert("Game failed to launch: " + (data.msg || 'Unknown error'));
+            }
+          })
+          .catch(err => {
+            alert("Network error: " + err.message);
+          });
+      });
+    }
+  });
+
+
+      // Use IntersectionObserver to restart counter animation every time counters become visible
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.textContent = "0"; // Reset
+            animateCounter(entry.target);
+          }
+        });
+      }, options);
+
+      counters.forEach((counter) => observer.observe(counter));
+      document.getElementById("subscribeForm").addEventListener("submit", function (e) {
+    e.preventDefault(); // stop form from refreshing page
+
+    // Show the message
+    document.getElementById("subscribeMessage").style.display = "block";
+
+    // Clear input
+    this.querySelector("input[type='email']").value = "";});
+
+    document.getElementById("subscribeForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const btn = document.getElementById("subscribeBtn");
+
+    // Button change after subscribing
+    btn.innerHTML = '<i class="fa-solid fa-bell"></i> Subscribed';
+    btn.classList.remove("btn-outline-info");
+    btn.classList.add("btn-info");
+
+    
+
+    // Disable button
+    btn.disabled = true;
+    document.querySelector("input[type='email']").disabled = true;
+  });
+    </script>
+  </body>
+</html>

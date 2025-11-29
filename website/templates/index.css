@@ -1,0 +1,13 @@
+#search{
+    color:rgb(0, 0, 0) ;
+    background-color: rgb(185, 254, 250) ;
+    
+}
+
+#search:hover{
+    box-shadow: 2px 2px 10px rgb(185, 254, 250);
+}
+
+#id{
+    display: inline-block;
+}

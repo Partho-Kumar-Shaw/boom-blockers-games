@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Boom Blockers - Leaderboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap + Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <style>
+    body { background: linear-gradient(120deg, #020024 0%, #091353 60%, #00d4ff 100%); color: #eaf6ff; }
+    .leaderboard-title { color: #ffd200; }
+    .table-dark { background: #00334e; color: #fff; border-radius: 18px; overflow: hidden; }
+    th { background: #00487b; color: #ffd200; }
+    .avatar-lg { width: 54px; height: 54px; border-radius: 50%; object-fit: cover; border: 3px solid #ffd200; }
+    .fa-medal, .fa-trophy, .fa-star { color: #ffd200; }
+    .sortable:hover { text-decoration: underline; cursor: pointer; color: #ffd200; }
+    .searchbox { max-width: 360px; background: #fffbe6; color: #00334e; border:none; }
+    .modal-content { background: #021538; color: #fff; }
+    .progress { height: 18px; }
+    .btn-challenge { background: #ffd200; color: #00334e; }
+    .btn-challenge:hover { background: #fff45e; }
+    .footer { background: #00487b; color: #fff; padding: 2rem 0; margin-top: 3rem; }
+    @media (max-width: 575.98px) {
+      .avatar-lg { width: 28px; height: 28px; }
+      .searchbox { max-width: 100%; }
+      .table-responsive { font-size: 0.93rem; }
+    }
+  </style>
+</head>
+<body>
+    <div id="noPlayersMsg" class="alert alert-warning text-center mx-auto mt-2" style="display:none; max-width: 400px;">
+        <i class="fa-solid fa-user-slash"></i> No players found matching your search.
+    </div>
+    
+  <a href="javascript:history.back()" class="position-absolute" style="top: 0.6rem; left: 1.8rem; font-size:2.2rem; color:#ffd200; text-decoration:none;">
+      <i class="fa-solid fa-arrow-left"></i>
+  </a>
+
+  <div class="container py-5">
+    <h2 class="text-center fw-bold mb-4 leaderboard-title">
+      <i class="fa-solid fa-ranking-star"></i> Leaderboard
+    </h2>
+
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
+      <input type="text" id="searchInput" class="form-control searchbox me-3 mb-2" placeholder="Search player…">
+      <span class="badge rounded-pill bg-warning text-dark p-2 px-4 fs-6"><i class="fa-solid fa-users"></i> Active Players: <span id="activeCount"></span></span>
+    </div>
+
+    <div class="table-responsive rounded shadow mb-4">
+      <table class="table table-dark table-striped align-middle" id="leaderboardTable">
+        <thead>
+          <tr>
+            <th scope="col" class="sortable" data-sort="rank">Rank <i class="fa fa-sort"></i></th>
+            <th scope="col">Player</th>
+            <th scope="col" class="sortable" data-sort="score">Score <i class="fa fa-sort"></i></th>
+            <th scope="col">Ship</th>
+            <th scope="col" class="sortable" data-sort="level">Level <i class="fa fa-sort"></i></th>
+            <th scope="col">Medals</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboardBody">
+          <!-- JavaScript fills in rows -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Player Modal -->
+  <div class="modal fade" id="playerModal" tabindex="-1" aria-labelledby="playerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center py-4">
+        <img id="modalAvatar" src="" class="avatar-lg mb-2" alt="Avatar">
+        <h4 id="modalName"></h4>
+        <p id="modalShip"></p>
+        <div class="progress mb-2 mx-4">
+          <div class="progress-bar bg-warning" id="modalProgressBar" role="progressbar"></div>
+        </div>
+        <p id="modalLevel"></p>
+        <div id="modalMedals"></div>
+        <div class="mt-2">
+          <button class="btn btn-challenge" id="challengeBtn"><i class="fa-solid fa-crosshairs"></i> Challenge</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Footer-->
+<div class="footer text-center py-5" style="background-color:#00334e; color:#eaf6ff;">
+  <div class="container-fluid px-3 px-md-5">
+    <div class="row gy-4 justify-content-center">
+      <!-- Newsletter -->
+      <div class="col-12 col-md-6 mb-5">
+        <h6>Subscribe to our Newsletter</h6>
+        <form class="d-flex flex-column flex-sm-row justify-content-center" id="subscribeForm">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            aria-label="Email for newsletter"
+            class="form-control form-control form-control-sm me-sm-2 mb-2 mb-sm-0 w-100"
+            required
+          />
+          <button type="submit" class="btn btn btn-outline-info btn w-100 w-sm-auto" id="subscribeBtn">
+            <i class="far fa-bell"></i> Subscribe
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="row gy-4">
+      <!-- Left -->
+      <div class="col-12 col-md-4 text-md-start">
+        <h5><i class="fa-solid fa-code"></i> Ship Shooter Game Portal</h5>
+        <p>&copy; 2025 Ship Shooter Team. Designed with Bootstrap & Font Awesome.</p>
+        <p>All rights reserved.</p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-12 col-md-3">
+        <h6>Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-decoration-none text-info">About</a></li>
+          <li><a href="#" class="text-decoration-none text-info">Contact</a></li>
+          <li><a href="#" class="text-decoration-none text-info">Privacy Policy</a></li>
+          <li><a href="#" class="text-decoration-none text-info">Terms of Service</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="col-12 col-md-4 text-md-end">
+        <h6>Contact Us</h6>
+        <p>
+          <i class="fa-solid fa-envelope"></i> support@shipshooter.com<br />
+          <i class="fa-solid fa-phone"></i> +1 (555) 123-4567
+        </p>
+        <h6>Follow Us</h6>
+        <a href="#" class="me-3 text-info"><i class="fab fa-discord fa-lg"></i></a>
+        <a href="#" class="me-3 text-info"><i class="fab fa-twitter fa-lg"></i></a>
+        <a href="#" class="text-info"><i class="fab fa-youtube fa-lg"></i></a>
+        <p class="mt-3">
+          <small>123 Gaming Blvd, Game City, GC 89012</small>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer bottom -->
+  <div style="border-top: 1px solid #21638c; margin-top: 2rem; padding-top: 1rem;">
+    <p style="margin: 0; font-size: 0.95rem; color: #ffd200;">
+      Beautifully crafted with <span style="color: #ff4d6d;">&hearts;</span> by our team members:
+      <a href="#" class="text-info text-decoration-none">@partho</a>,
+      <a href="#" class="text-info text-decoration-none">@prachi</a>,
+      <a href="#" class="text-info text-decoration-none">@risha</a>,
+      <a href="#" class="text-info text-decoration-none">@shrishti</a>
+    </p>
+  </div>
+</div>
+
+  <script>
+    const players = [
+      {
+        rank: 1, name: "Partho (aka Rolex)", email: "parthokumarshaw@gmail.com",
+        avatar: "E:/.vscode/final college project/website/static/img/assets/rolex.png", ship: "Destroyer", score: 4200, level: 34,
+        medals: ["Pro", "Fastest Battle", "Season Top 10"]
+      },
+      {
+        rank: 2, name: "Prachi", email: "prachinamdeo377@gmail.com",
+        avatar: "E:/.vscode/final college project/website/static/img/assets/rolex.png", ship: "Destroyer", score: 3980, level: 33,
+        medals: ["GOOD+", "50+ Wins"]
+      },
+      {
+        rank: 3, name: "Risha", email: "risha@email.com",
+        avatar: "E:/.vscode/final college project/website/static/img/assets/rolex.png", ship: "Cruiser", score: 3890, level: 32,
+        medals: ["Good", "50+ Wins"]
+      },
+      {
+        rank: 4, name: "Shrishti", email: "shrishti@email.com",
+        avatar: "E:/.vscode/final college project/website/static/img/assets/rolex.png", ship: "Battleship", score: 3530, level: 25,
+        medals: ["NOOB!"]
+      },
+      {
+        rank: 5, name: "Arvind", email: "arvind@email.com",
+        avatar: "E:/.vscode/final college project/website/static/img/assets/rolex.png", ship: "Stealth", score: 3325, level: 19,
+        medals: ["Rising Star"]
+      }
+    ];
+
+    // Helper to keep actual rank numbers
+    function updateRanks() {
+      players.sort((a, b) => b.score - a.score);
+      players.forEach((p, idx) => p.rank = idx + 1);
+    }
+
+    function renderLeaderboard(data) {
+      let body = "";
+      data.forEach(player => {
+        body += `
+          <tr>
+            <td>${player.rank}</td>
+            <td>
+              <img src="${player.avatar}" class="avatar-lg me-2" alt="Avatar">
+              <span class="fw-bold">${player.name}</span>
+            </td>
+            <td class="fw-semibold">${player.score}</td>
+            <td><i class="fa fa-ship text-info"></i> ${player.ship}</td>
+            <td>${player.level}</td>
+            <td>
+              ${player.medals.map(m => `
+                <span class="badge bg-warning text-dark ms-1">${m === "Pro" ? '<i class="fa-solid fa-trophy"></i>' : ''}${m === "Season Top 10" ? '<i class="fa-solid fa-star"></i>' : ''}${m === "Fastest Battle" ? '<i class="fa-solid fa-bolt"></i>' : ''}${m === "50+ Wins" ? '<i class="fa-solid fa-rocket"></i>' : ''}${m === "Rising Star" ? '<i class="fa-solid fa-star"></i>' : ''}${m === "NOOB!" ? '<i class="fa-solid fa-battery-empty"></i>' : ''} ${m}</span>
+              `).join('')}
+            </td>
+            <td>
+              <button class="btn btn-sm btn-primary btn-player-details" data-index="${player.rank-1}"><i class="fa-solid fa-circle-info"></i></button>
+              <button class="btn btn-sm btn-challenge ms-1 btn-player-challenge" data-index="${player.rank-1}"><i class="fa-solid fa-crosshairs"></i></button>
+            </td>
+          </tr>
+        `;
+      });
+      document.getElementById("leaderboardBody").innerHTML = body;
+      document.getElementById("activeCount").innerText = data.length;
+    }
+const noPlayersMsg = document.getElementById('noPlayersMsg');
+        const searchInput = document.getElementById('searchInput');
+        function handleNoPlayers(filtered) {
+            if (filtered.length === 0 && searchInput.value.trim() !== "") {
+                noPlayersMsg.style.display = "";
+            } else {
+                noPlayersMsg.style.display = "none";
+            }
+        }
+        // Patch search logic to show/hide message
+        searchInput.addEventListener('input', function() {
+            let term = this.value.toLowerCase();
+            let filtered = players.filter(p => p.name.toLowerCase().includes(term) || p.ship.toLowerCase().includes(term));
+            renderLeaderboard(filtered);
+            handleNoPlayers(filtered);
+        });
+        // On initial load
+        handleNoPlayers(players);
+    // Sorting logic
+    document.querySelectorAll('.sortable').forEach(header => {
+      header.addEventListener('click', function() {
+        let field = header.getAttribute('data-sort');
+        if (field === "score") players.sort((a, b) => b.score - a.score);
+        if (field === "level") players.sort((a, b) => b.level - a.level);
+        if (field === "rank") updateRanks();
+        renderLeaderboard(players);
+      });
+    });
+
+    // Search (filter) logic
+    // (Removed duplicate event listener to avoid missing handleNoPlayers)
+
+    // Initial Table
+    updateRanks();
+    renderLeaderboard(players);
+
+    // Details Modal
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('btn-player-details')) {
+        let idx = e.target.getAttribute('data-index');
+        let player = players[idx];
+        let modal = new bootstrap.Modal(document.getElementById('playerModal'));
+        document.getElementById('modalAvatar').src = player.avatar;
+        document.getElementById('modalName').innerText = player.name;
+        document.getElementById('modalShip').innerHTML = `<i class="fa fa-ship text-info"></i> ${player.ship}`;
+        document.getElementById('modalLevel').innerHTML = `<i class="fa-solid fa-layer-group"></i> Level: ${player.level}`;
+        document.getElementById('modalProgressBar').style.width = Math.min(player.level*2+10,100) + "%";
+        document.getElementById('modalMedals').innerHTML = player.medals.map(m => `<span class="badge bg-warning text-dark ms-1">${m}</span>`).join('');
+        modal.show();
+      }
+      // Challenge button action
+      if (e.target.classList.contains('btn-player-challenge')) {
+        let idx = e.target.getAttribute('data-index');
+        let player = players[idx];
+        let row = e.target.closest('tr');
+        row.style.outline = "3px solid #ffd200";
+        // Show challenge toast
+        showChallengeToast(`Challenge sent to <b>${player.name}</b>!`);
+        setTimeout(() => { row.style.outline = ""; }, 1300);
+      }
+      if (e.target.id === "challengeBtn") {
+        showChallengeToast("Challenge sent from modal!");
+        bootstrap.Modal.getInstance(document.getElementById('playerModal')).hide();
+      }
+    });
+
+    // Toast for challenge
+    if (!document.getElementById('alert-container')) {
+      let alertContainer = document.createElement('div');
+      alertContainer.id = 'alert-container';
+      alertContainer.style.position = "fixed";
+      alertContainer.style.top = "27px";
+      alertContainer.style.right = "32px";
+      alertContainer.style.zIndex = "20000";
+      document.body.appendChild(alertContainer);
+    }
+    function showChallengeToast(html) {
+      let toast = document.createElement('div');
+      toast.className = 'alert alert-warning shadow mb-2';
+      toast.innerHTML = html;
+      document.getElementById('alert-container').appendChild(toast);
+      setTimeout(() => toast.remove(), 2300);
+    }
+    counters.forEach((counter) => observer.observe(counter));
+      document.getElementById("subscribeForm").addEventListener("submit", function (e) {
+    e.preventDefault(); // stop form from refreshing page
+
+    // Show the message
+    document.getElementById("subscribeMessage").style.display = "block";
+
+    // Clear input
+    this.querySelector("input[type='email']").value = "";});
+
+    document.getElementById("subscribeForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const btn = document.getElementById("subscribeBtn");
+
+    // Button change after subscribing
+    btn.innerHTML = '<i class="fa-solid fa-bell"></i> Subscribed';
+    btn.classList.remove("btn-outline-info");
+    btn.classList.add("btn-info");
+
+    
+
+    // Disable button
+    btn.disabled = true;
+    document.querySelector("input[type='email']").disabled = true;
+  });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

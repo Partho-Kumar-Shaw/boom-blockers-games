@@ -1,0 +1,9 @@
+parth@JARVIS MINGW64 ~E:\.vscode\final college project\website
+
+cd client
+python game.py
+cd ../frontend
+python app.py
+
+and in vs code change directory to website 
+and run python app.py
