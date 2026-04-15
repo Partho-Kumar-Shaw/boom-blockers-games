@@ -2,6 +2,6 @@
 
 **1. Clone the repository**
 ```bash
-git clone [https://github.com/Deo-Mohan/DarshanEase.git](https://github.com/Deo-Mohan/DarshanEase.git)
+git clone [https://github.com/Partho-Kumar-Shaw/boom-blockers-games.git](https://github.com/Partho-Kumar-Shaw/boom-blockers-games.git)
 cd DarshanEase
 ```
