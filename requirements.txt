@@ -1,4 +1,3 @@
-parth@JARVIS MINGW64 ~E:\.vscode\final college project\website
 
 cd client
 python game.py
